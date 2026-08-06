@@ -38,7 +38,7 @@
     <section class="view active" id="homeView">
       <div class="hero">
         <div class="hero__copy">
-          <div class="eyebrow"><i></i> تحديات مباشرة • 5 ضد 5</div>
+          <div class="eyebrow"><i></i> تحديات مباشرة • من لاعبين إلى 10</div>
           <h1>المعرفة سلاحك.<br><span>وفريقك قوتك.</span></h1>
           <p>كوّن فريقك، ادخل ساحة التحدي، وتنافسوا على نفس الأسئلة في معركة سرعة وذكاء لا تُنسى.</p>
           <div class="hero__actions">
@@ -74,6 +74,7 @@
       <form class="panel form-panel" id="createForm">
         <div class="form-grid">
           <label class="field"><span>عدد الأسئلة</span><div class="choice-group" data-name="questions"><button type="button">10</button><button type="button" class="selected">20</button><button type="button">30</button><button type="button">50</button><button type="button">100</button></div></label>
+          <label class="field"><span>إجمالي عدد اللاعبين</span><select id="playerCount"><option value="2">لاعبان — 1 ضد 1</option><option value="3">3 لاعبين — 2 ضد 1</option><option value="4">4 لاعبين — 2 ضد 2</option><option value="5">5 لاعبين — 3 ضد 2</option><option value="6">6 لاعبين — 3 ضد 3</option><option value="7">7 لاعبين — 4 ضد 3</option><option value="8">8 لاعبين — 4 ضد 4</option><option value="9">9 لاعبين — 5 ضد 4</option><option value="10" selected>10 لاعبين — 5 ضد 5</option></select></label>
           <label class="field"><span>وقت كل سؤال</span><div class="choice-group" data-name="time"><button type="button">10 ث</button><button type="button" class="selected">15 ث</button><button type="button">20 ث</button><button type="button">30 ث</button></div></label>
           <label class="field"><span>نوع الأسئلة</span><select id="category"><option>أسئلة متنوعة</option><option>علوم وتقنية</option><option>تاريخ وحضارات</option><option>رياضة</option><option>جغرافيا</option><option>ثقافة عامة</option></select></label>
           <label class="field"><span>كلمة مرور <em>اختياري</em></span><div class="input-wrap"><span>🔒</span><input type="password" placeholder="اتركها فارغة لغرفة عامة"></div></label>
@@ -135,7 +136,7 @@
     <!-- كيفية اللعب -->
     <section class="view inner-view" id="howView">
       <div class="section-heading centered"><span class="eyebrow">من الغرفة إلى القمة</span><h2>كيف تلعب BattleQuiz؟</h2><p>أربع خطوات بسيطة تفصلك عن أول انتصار.</p></div>
-      <div class="steps"><article><b>01</b><span>⌂</span><h3>أنشئ غرفة</h3><p>حدّد عدد الأسئلة ووقتها وفئاتها، ثم شارك الكود.</p></article><article><b>02</b><span>♟</span><h3>كوّن فريقك</h3><p>ينضم خمسة لاعبين لكل فريق ويستعد الجميع.</p></article><article><b>03</b><span>⚡</span><h3>أجب بسرعة</h3><p>الإجابة الصحيحة الأسرع تمنح فريقك نقاطًا أكثر.</p></article><article><b>04</b><span>🏆</span><h3>اصنع مجدك</h3><p>اجمع النقاط، فُز بالمباراة، وتصدّر القائمة.</p></article></div>
+      <div class="steps"><article><b>01</b><span>⌂</span><h3>أنشئ غرفة</h3><p>حدّد عدد الأسئلة ووقتها وفئاتها، ثم شارك الكود.</p></article><article><b>02</b><span>♟</span><h3>كوّن فريقك</h3><p>اختر من لاعبين إلى 10 وتُوزّع المقاعد بين الفريقين.</p></article><article><b>03</b><span>⚡</span><h3>أجب بسرعة</h3><p>الإجابة الصحيحة الأسرع تمنح فريقك نقاطًا أكثر.</p></article><article><b>04</b><span>🏆</span><h3>اصنع مجدك</h3><p>اجمع النقاط، فُز بالمباراة، وتصدّر القائمة.</p></article></div>
       <div class="rules panel"><h3>قواعد الساحة</h3><div><p><span>✓</span> يرى الفريقان نفس السؤال في اللحظة نفسها.</p><p><span>✓</span> لا يمكن تغيير الإجابة بعد اختيارها.</p><p><span>✓</span> تحتسب السرعة والدقة في مجموع النقاط.</p><p><span>✓</span> الفريق صاحب أعلى مجموع يفوز بالمواجهة.</p></div></div>
     </section>
   </main>
