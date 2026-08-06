@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BattleQuiz — منافسة أسئلة مباشرة بنظام فريق ضد فريق">
+  <meta name="theme-color" content="#080a13">
+  <title>BattleQuiz | ساحة المعرفة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- خلفية متحركة وزخارف ضوئية -->
+  <div class="background" aria-hidden="true">
+    <div class="orb orb--blue"></div><div class="orb orb--purple"></div>
+    <div class="grid"></div><div class="particles" id="particles"></div>
+  </div>
+
+  <!-- شريط التنقل -->
+  <header class="topbar">
+    <button class="brand" data-view="home" aria-label="العودة للرئيسية">
+      <span class="brand__mark"><span>B</span></span>
+      <span class="brand__text">BATTLE<span>QUIZ</span></span>
+    </button>
+    <nav class="nav" aria-label="التنقل الرئيسي">
+      <button data-view="home" class="nav__link active">الرئيسية</button>
+      <button data-view="leaderboard" class="nav__link">المتصدرون</button>
+      <button data-view="how" class="nav__link">كيفية اللعب</button>
+    </nav>
+    <button class="btn btn--ghost login-btn" id="authTrigger" data-modal="login"><span class="icon">♙</span><span id="authTriggerText">تسجيل الدخول</span></button>
+    <button class="menu-btn" id="menuBtn" aria-label="فتح القائمة" aria-expanded="false">☰</button>
+  </header>
+
+  <main>
+    <!-- الصفحة الرئيسية -->
+    <section class="view active" id="homeView">
+      <div class="hero">
+        <div class="hero__copy">
+          <div class="eyebrow"><i></i> تحديات مباشرة • 5 ضد 5</div>
+          <h1>المعرفة سلاحك.<br><span>وفريقك قوتك.</span></h1>
+          <p>كوّن فريقك، ادخل ساحة التحدي، وتنافسوا على نفس الأسئلة في معركة سرعة وذكاء لا تُنسى.</p>
+          <div class="hero__actions">
+            <button class="btn btn--primary btn--large" data-view="create"><span>＋</span> إنشاء غرفة</button>
+            <button class="btn btn--glass btn--large" data-view="join"><span>↪</span> انضم إلى غرفة</button>
+          </div>
+          <div class="live-strip"><span class="avatars"><i>م</i><i>س</i><i>ر</i><i>+2K</i></span><strong>+2,400</strong> لاعب يتنافسون الآن <b></b></div>
+        </div>
+
+        <!-- بطاقة مواجهة حية -->
+        <div class="battle-card glass tilt-card">
+          <div class="battle-card__top"><span><i class="live-dot"></i> مباراة مباشرة</span><small>السؤال 7 من 10</small></div>
+          <div class="teams-preview">
+            <div class="team team--red"><div class="team__crest">🔥</div><div><small>الفريق الأحمر</small><strong>الصقور</strong></div><b>420</b></div>
+            <div class="versus"><span>VS</span><small>00:14</small></div>
+            <div class="team team--blue"><div class="team__crest">⚡</div><div><small>الفريق الأزرق</small><strong>العواصف</strong></div><b>390</b></div>
+          </div>
+          <div class="mini-question"><small>الجغرافيا</small><strong>ما هي أكبر قارة في العالم من حيث المساحة؟</strong><div class="mini-options"><span>أوروبا</span><span class="selected">آسيا ✓</span><span>أفريقيا</span><span>أمريكا</span></div></div>
+          <div class="battle-card__foot"><span>أجاب 8 من 10 لاعبين</span><div class="progress"><i></i></div></div>
+        </div>
+      </div>
+
+      <div class="feature-row">
+        <article><span>⚔</span><div><strong>منافسة حقيقية</strong><small>فريقان، سؤال واحد، وفائز واحد</small></div></article>
+        <article><span>⚡</span><div><strong>نتائج لحظية</strong><small>تابع النقاط والأداء في الوقت الحقيقي</small></div></article>
+        <article><span>🏆</span><div><strong>تصدّر القمة</strong><small>اربح المباريات واصنع مجد فريقك</small></div></article>
+      </div>
+    </section>
+
+    <!-- إنشاء غرفة -->
+    <section class="view inner-view" id="createView">
+      <div class="section-heading"><button class="back-btn" data-view="home">←</button><div><span class="eyebrow">جهّز ساحة المنافسة</span><h2>إنشاء غرفة جديدة</h2><p>اختر إعدادات المعركة وشارك الكود مع فريقك.</p></div></div>
+      <form class="panel form-panel" id="createForm">
+        <div class="form-grid">
+          <label class="field"><span>عدد الأسئلة</span><div class="choice-group" data-name="questions"><button type="button">10</button><button type="button" class="selected">20</button><button type="button">30</button><button type="button">50</button><button type="button">100</button></div></label>
+          <label class="field"><span>وقت كل سؤال</span><div class="choice-group" data-name="time"><button type="button">10 ث</button><button type="button" class="selected">15 ث</button><button type="button">20 ث</button><button type="button">30 ث</button></div></label>
+          <label class="field"><span>نوع الأسئلة</span><select id="category"><option>أسئلة متنوعة</option><option>علوم وتقنية</option><option>تاريخ وحضارات</option><option>رياضة</option><option>جغرافيا</option><option>ثقافة عامة</option></select></label>
+          <label class="field"><span>كلمة مرور <em>اختياري</em></span><div class="input-wrap"><span>🔒</span><input type="password" placeholder="اتركها فارغة لغرفة عامة"></div></label>
+          <label class="field team-input red"><span>اسم الفريق الأحمر</span><div class="input-wrap"><span>🔥</span><input required value="الصقور" maxlength="18"></div></label>
+          <label class="field team-input blue"><span>اسم الفريق الأزرق</span><div class="input-wrap"><span>⚡</span><input required value="العواصف" maxlength="18"></div></label>
+        </div>
+        <div class="form-footer"><div class="hint">🔐 يمكنك تعديل الإعدادات قبل بدء المباراة</div><button class="btn btn--primary btn--large" type="submit">إنشاء الغرفة <span>←</span></button></div>
+      </form>
+    </section>
+
+    <!-- الانضمام -->
+    <section class="view inner-view" id="joinView">
+      <div class="section-heading centered"><span class="eyebrow">حان وقت المواجهة</span><h2>انضم إلى المعركة</h2><p>أدخل بياناتك واختر الفريق الذي ستمثّله.</p></div>
+      <form class="panel join-panel" id="joinForm">
+        <label class="field"><span>اسم اللاعب</span><div class="input-wrap"><span>♙</span><input id="playerName" required maxlength="16" placeholder="اكتب اسمك هنا"></div></label>
+        <label class="field"><span>كود الغرفة</span><div class="code-input"><input id="roomCodeInput" required maxlength="6" placeholder="A7X9Q2" autocomplete="off"></div></label>
+        <span class="field-label">اختر فريقك</span>
+        <div class="team-select">
+          <button type="button" class="team-choice red selected" data-team="red"><span class="radio"></span><i>🔥</i><strong>الفريق الأحمر</strong><small>4 / 5 لاعبين</small><div class="slots"><b></b><b></b><b></b><b></b><b class="empty"></b></div></button>
+          <button type="button" class="team-choice blue" data-team="blue"><span class="radio"></span><i>⚡</i><strong>الفريق الأزرق</strong><small>3 / 5 لاعبين</small><div class="slots"><b></b><b></b><b></b><b class="empty"></b><b class="empty"></b></div></button>
+        </div>
+        <button class="btn btn--primary btn--large full" type="submit">الانضمام الآن <span>←</span></button>
+      </form>
+    </section>
+
+    <!-- غرفة الانتظار -->
+    <section class="view inner-view" id="lobbyView">
+      <div class="lobby-head"><div><span class="eyebrow"><i></i> الغرفة جاهزة</span><h2>بانتظار اكتمال الفريقين</h2></div><div class="room-code"><small>كود الغرفة</small><strong id="roomCode">BQ7X92</strong><button id="copyCode" aria-label="نسخ الكود">▣</button></div></div>
+      <div class="lobby-grid">
+        <div class="roster roster--red"><div class="roster__head"><span>🔥</span><div><small>الفريق الأحمر</small><strong id="redTeamTitle">الصقور</strong></div><b>4/5</b></div><div class="players" id="redPlayers"></div></div>
+        <div class="lobby-center"><span>VS</span><strong id="lobbyStatus">9/10</strong><small>لاعبين جاهزين</small><button class="btn btn--primary" id="startGame">ابدأ المباراة</button><p>يمكن لقائد الغرفة بدء مباراة تجريبية</p></div>
+        <div class="roster roster--blue"><div class="roster__head"><span>⚡</span><div><small>الفريق الأزرق</small><strong id="blueTeamTitle">العواصف</strong></div><b>5/5</b></div><div class="players" id="bluePlayers"></div></div>
+      </div>
+    </section>
+
+    <!-- شاشة المباراة -->
+    <section class="view game-view" id="gameView">
+      <div class="game-score"><div class="score-team red"><span>🔥</span><div><small id="gameRedName">الصقور</small><strong id="redScore">0</strong></div></div><div class="timer-wrap"><div class="timer" id="timer"><strong id="timerValue">15</strong><small>ثانية</small></div></div><div class="score-team blue"><div><small id="gameBlueName">العواصف</small><strong id="blueScore">0</strong></div><span>⚡</span></div></div>
+      <div class="active-players" aria-label="اللاعبون في المباراة"><div class="active-squad active-squad--red"><span class="squad-label"><i></i> يلعب الآن</span><div class="squad-members" id="gameRedPlayers"></div></div><div class="active-squad active-squad--blue"><span class="squad-label"><i></i> يلعب الآن</span><div class="squad-members" id="gameBluePlayers"></div></div></div>
+      <div class="question-meta"><span id="questionCount">السؤال 1 من 5</span><div class="question-progress"><i id="questionProgress"></i></div><b id="questionCategory">جغرافيا</b></div>
+      <div class="question-box"><div class="question-number">؟</div><h2 id="questionText">ما هي أكبر قارة في العالم من حيث المساحة؟</h2><div class="answers" id="answers"></div><div class="answer-status" id="answerStatus">اختر الإجابة الصحيحة قبل انتهاء الوقت</div></div>
+    </section>
+
+    <!-- نهاية المباراة -->
+    <section class="view inner-view" id="resultView">
+      <div class="result-hero"><div class="trophy">🏆</div><span class="eyebrow">انتهت المعركة</span><h2>الفريق الأحمر ينتصر!</h2><p>مباراة رائعة حُسمت بفارق بسيط من النقاط</p><div class="final-score"><strong id="finalRed">420</strong><span>الصقور <b>—</b> العواصف</span><strong id="finalBlue">390</strong></div></div>
+      <div class="result-grid"><div class="panel mvp-card"><span class="mvp-badge">MVP</span><div class="avatar big">س</div><div><small>أفضل لاعب في المباراة</small><h3>سـارة</h3><p>4 إجابات صحيحة • متوسط 3.2 ثانية</p></div><strong>+380 XP</strong></div><div class="panel stats-card"><div class="card-title"><h3>إحصائيات اللاعبين</h3><span>الصحيحة / الخاطئة / السرعة</span></div><div id="statsRows"></div></div></div>
+      <div class="result-actions"><button class="btn btn--glass" data-view="home">العودة للرئيسية</button><button class="btn btn--primary" id="playAgain">العب مجددًا ↻</button></div>
+    </section>
+
+    <!-- المتصدرون -->
+    <section class="view inner-view" id="leaderboardView">
+      <div class="section-heading"><div><span class="eyebrow">قاعة الأبطال</span><h2>لوحة المتصدرين</h2><p>أفضل اللاعبين والفرق في BattleQuiz هذا الموسم.</p></div><select class="season"><option>الموسم الحالي</option><option>هذا الأسبوع</option></select></div>
+      <div class="tabs" id="leaderTabs"><button class="active" data-tab="players">أفضل اللاعبين</button><button data-tab="teams">أفضل الفرق</button><button data-tab="wins">الأكثر انتصارًا</button></div>
+      <div class="podium" id="podium"></div><div class="panel leaderboard-table" id="leaderTable"></div>
+    </section>
+
+    <!-- كيفية اللعب -->
+    <section class="view inner-view" id="howView">
+      <div class="section-heading centered"><span class="eyebrow">من الغرفة إلى القمة</span><h2>كيف تلعب BattleQuiz؟</h2><p>أربع خطوات بسيطة تفصلك عن أول انتصار.</p></div>
+      <div class="steps"><article><b>01</b><span>⌂</span><h3>أنشئ غرفة</h3><p>حدّد عدد الأسئلة ووقتها وفئاتها، ثم شارك الكود.</p></article><article><b>02</b><span>♟</span><h3>كوّن فريقك</h3><p>ينضم خمسة لاعبين لكل فريق ويستعد الجميع.</p></article><article><b>03</b><span>⚡</span><h3>أجب بسرعة</h3><p>الإجابة الصحيحة الأسرع تمنح فريقك نقاطًا أكثر.</p></article><article><b>04</b><span>🏆</span><h3>اصنع مجدك</h3><p>اجمع النقاط، فُز بالمباراة، وتصدّر القائمة.</p></article></div>
+      <div class="rules panel"><h3>قواعد الساحة</h3><div><p><span>✓</span> يرى الفريقان نفس السؤال في اللحظة نفسها.</p><p><span>✓</span> لا يمكن تغيير الإجابة بعد اختيارها.</p><p><span>✓</span> تحتسب السرعة والدقة في مجموع النقاط.</p><p><span>✓</span> الفريق صاحب أعلى مجموع يفوز بالمواجهة.</p></div></div>
+    </section>
+  </main>
+
+  <!-- نافذة تسجيل الدخول -->
+  <div class="modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <div class="modal__card panel auth-card"><button class="modal__close" id="closeModal" aria-label="إغلاق">×</button><div class="modal__icon">B</div><h2 id="loginTitle">مرحبًا بك في BattleQuiz</h2><p>سجّل دخولك واحفظ انتصاراتك وإنجازاتك.</p><div class="auth-tabs"><button class="active" type="button" data-auth="login">تسجيل الدخول</button><button type="button" data-auth="signup">إنشاء حساب</button></div><button class="google-btn" id="googleLogin" type="button"><span class="google-mark">G</span><strong id="googleLabel">المتابعة باستخدام Google</strong></button><div class="auth-divider"><span>أو باستخدام البريد الإلكتروني</span></div><form id="authForm"><label class="field signup-only"><span>اسم اللاعب</span><div class="input-wrap"><span>♙</span><input id="authName" maxlength="18" placeholder="اسمك داخل اللعبة"></div></label><label class="field"><span>البريد الإلكتروني</span><div class="input-wrap"><span>✉</span><input id="authEmail" required type="email" autocomplete="email" placeholder="name@example.com"></div></label><label class="field"><span>كلمة المرور</span><div class="input-wrap"><span>🔒</span><input id="authPassword" required minlength="6" type="password" autocomplete="current-password" placeholder="6 أحرف على الأقل"></div></label><label class="field signup-only"><span>تأكيد كلمة المرور</span><div class="input-wrap"><span>✓</span><input id="authConfirm" type="password" autocomplete="new-password" placeholder="أعد كتابة كلمة المرور"></div></label><div class="auth-options login-only"><label><input type="checkbox"> تذكرني</label><button type="button">نسيت كلمة المرور؟</button></div><button class="btn btn--primary full" id="loginSubmit" type="submit">تسجيل الدخول</button></form><small class="auth-note">بالمتابعة أنت توافق على شروط الاستخدام وسياسة الخصوصية.</small></div>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <script type="module" src="script.js"></script>
+</body>
+</html>
