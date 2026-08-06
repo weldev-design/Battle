@@ -90,6 +90,7 @@
       <form class="panel join-panel" id="joinForm">
         <label class="field"><span>اسم اللاعب</span><div class="input-wrap"><span>♙</span><input id="playerName" required maxlength="16" placeholder="اكتب اسمك هنا"></div></label>
         <label class="field"><span>كود الغرفة</span><div class="code-input"><input id="roomCodeInput" required maxlength="6" placeholder="A7X9Q2" autocomplete="off"></div></label>
+        <label class="field"><span>كلمة مرور الغرفة <em>إذا كانت مطلوبة</em></span><div class="input-wrap"><span>🔒</span><input id="joinPassword" type="password" placeholder="اتركها فارغة للغرف العامة"></div></label>
         <span class="field-label">اختر فريقك</span>
         <div class="team-select">
           <button type="button" class="team-choice red selected" data-team="red"><span class="radio"></span><i>🔥</i><strong>الفريق الأحمر</strong><small>يظهر العدد بعد التحقق</small><div class="slots"><b class="empty"></b><b class="empty"></b><b class="empty"></b><b class="empty"></b><b class="empty"></b></div></button>
@@ -104,7 +105,7 @@
       <div class="lobby-head"><div><span class="eyebrow"><i></i> الغرفة جاهزة</span><h2>بانتظار اكتمال الفريقين</h2></div><div class="room-code"><small>كود الغرفة</small><strong id="roomCode">BQ7X92</strong><button id="copyCode" aria-label="نسخ الكود">▣</button></div></div>
       <div class="lobby-grid">
         <div class="roster roster--red"><div class="roster__head"><span>🔥</span><div><small>الفريق الأحمر</small><strong id="redTeamTitle">لم يُسمّ بعد</strong></div><b>0/5</b></div><div class="players" id="redPlayers"></div></div>
-        <div class="lobby-center"><span>VS</span><strong id="lobbyStatus">0/10</strong><small>لاعبين جاهزين</small><button class="btn btn--primary" id="startGame" disabled>بانتظار اللاعبين</button><p id="lobbyHint">يجب اكتمال الفريقين 5/5 لبدء المباراة</p></div>
+        <div class="lobby-center"><span>VS</span><strong id="lobbyStatus">0/10</strong><small>لاعبين جاهزين</small><button class="btn btn--primary" id="startGame" disabled>بانتظار اللاعبين</button><button class="btn btn--ghost leave-room" id="leaveRoom" type="button">مغادرة الغرفة</button><p id="lobbyHint">يجب اكتمال الفريقين 5/5 لبدء المباراة</p></div>
         <div class="roster roster--blue"><div class="roster__head"><span>⚡</span><div><small>الفريق الأزرق</small><strong id="blueTeamTitle">لم يُسمّ بعد</strong></div><b>0/5</b></div><div class="players" id="bluePlayers"></div></div>
       </div>
     </section>
@@ -114,7 +115,7 @@
       <div class="game-score"><div class="score-team red"><span>🔥</span><div><small id="gameRedName">الفريق الأحمر</small><strong id="redScore">0</strong></div></div><div class="timer-wrap"><div class="timer" id="timer"><strong id="timerValue">15</strong><small>ثانية</small></div></div><div class="score-team blue"><div><small id="gameBlueName">الفريق الأزرق</small><strong id="blueScore">0</strong></div><span>⚡</span></div></div>
       <div class="active-players" aria-label="اللاعبون في المباراة"><div class="active-squad active-squad--red"><span class="squad-label"><i></i> يلعب الآن</span><div class="squad-members" id="gameRedPlayers"></div></div><div class="active-squad active-squad--blue"><span class="squad-label"><i></i> يلعب الآن</span><div class="squad-members" id="gameBluePlayers"></div></div></div>
       <div class="question-meta"><span id="questionCount">السؤال 1 من 5</span><div class="question-progress"><i id="questionProgress"></i></div><b id="questionCategory">جغرافيا</b></div>
-      <div class="question-box"><div class="question-number">؟</div><h2 id="questionText">ما هي أكبر قارة في العالم من حيث المساحة؟</h2><div class="answers" id="answers"></div><div class="answer-status" id="answerStatus">اختر الإجابة الصحيحة قبل انتهاء الوقت</div></div>
+      <div class="question-box"><div class="question-number">؟</div><h2 id="questionText">يظهر السؤال عند بدء المباراة</h2><div class="answers" id="answers"></div><div class="answer-status" id="answerStatus">اختر الإجابة الصحيحة قبل انتهاء الوقت</div></div>
     </section>
 
     <!-- نهاية المباراة -->

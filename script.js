@@ -1,18 +1,21 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, sendPasswordResetEmail, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js';
+import { getDatabase, ref, set, get, update, remove, onValue, onDisconnect, serverTimestamp } from 'https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js';
 
 const firebaseApp = initializeApp({
   apiKey: 'AIzaSyBJkyPXoC2GK0AsFxfFaOow5GaoGWbOvq4', authDomain: 'battlequiz-bfa3f.firebaseapp.com', projectId: 'battlequiz-bfa3f',
-  storageBucket: 'battlequiz-bfa3f.firebasestorage.app', messagingSenderId: '1012207700550', appId: '1:1012207700550:web:c2c20f4cbad004d7515847'
+  storageBucket: 'battlequiz-bfa3f.firebasestorage.app', messagingSenderId: '1012207700550', appId: '1:1012207700550:web:c2c20f4cbad004d7515847',
+  databaseURL: 'https://battlequiz-bfa3f-default-rtdb.asia-southeast1.firebasedatabase.app'
 });
 const auth = getAuth(firebaseApp);
+const db = getDatabase(firebaseApp);
 const googleProvider = new GoogleAuthProvider();
 
 // BattleQuiz — واجهة اللعبة وربط حسابات Firebase.
 document.addEventListener('DOMContentLoaded', () => {
   const $ = (s, root = document) => root.querySelector(s);
   const $$ = (s, root = document) => [...root.querySelectorAll(s)];
-  const state = { selectedTeam: 'red', redName: 'الفريق الأحمر', blueName: 'الفريق الأزرق', redPlayers: [], bluePlayers: [], currentPlayer: '', redScore: 0, blueScore: 0, question: 0, timer: 15, timerId: null, answered: false };
+  const state = { selectedTeam: 'red', redName: 'الفريق الأحمر', blueName: 'الفريق الأزرق', redPlayers: [], bluePlayers: [], currentPlayer: '', roomCode: '', hostUid: '', roomUnsubscribe: null, disconnectTask: null, redScore: 0, blueScore: 0, question: 0, gameQuestions: [], timer: 15, timerId: null, answered: false };
 
   // بيانات تجريبية للمباراة (استبدلها لاحقًا ببيانات API).
   const questions = [
@@ -25,6 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // تنقّل داخلي بين أقسام الموقع.
   function showView(name) {
+    const insideRoom=$('#lobbyView').classList.contains('active')||$('#gameView').classList.contains('active');
+    if(state.roomCode&&insideRoom&&!['lobby','game','result'].includes(name)){if(!confirm('أنت داخل غرفة الآن. هل تريد مغادرتها؟'))return;leaveRoom(false);return}
     $$('.view').forEach(v => v.classList.remove('active'));
     const target = $(`#${name}View`);
     if (target) target.classList.add('active');
@@ -43,26 +48,35 @@ document.addEventListener('DOMContentLoaded', () => {
   $$('.choice-group').forEach(group => group.addEventListener('click', e => { if(e.target.tagName==='BUTTON'){ $$('button',group).forEach(b=>b.classList.remove('selected')); e.target.classList.add('selected'); } }));
   $$('.team-choice').forEach(btn => btn.addEventListener('click', () => { $$('.team-choice').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); state.selectedTeam=btn.dataset.team; }));
 
-  function renderLobby(extraName='') {
+  function renderLobby(roomData=null) {
     const make = (name, leader=false) => `<div class="player"><span class="avatar">${name[0]}</span><strong>${name}</strong><small>${leader?'قائد':'●'}</small></div>`;
-    const red=[], blue=[];
-    if(extraName){ const arr=state.selectedTeam==='red'?red:blue; arr.push(extraName); }
-    state.redPlayers=red; state.bluePlayers=blue; state.currentPlayer=extraName;
+    const redEntries=Object.entries(roomData?.teams?.red||{}), blueEntries=Object.entries(roomData?.teams?.blue||{});
+    const red=redEntries.map(([,p])=>p.name), blue=blueEntries.map(([,p])=>p.name);
+    state.redPlayers=red; state.bluePlayers=blue;
+    if(roomData){ state.redName=roomData.redName; state.blueName=roomData.blueName; state.hostUid=roomData.hostUid; $('#redTeamTitle').textContent=state.redName; $('#blueTeamTitle').textContent=state.blueName; }
     const emptySeats=count=>Array.from({length:count},()=>'<div class="player empty">＋ مقعد فارغ</div>').join('');
-    $('#redPlayers').innerHTML=red.map((n,i)=>make(n,i===0)).join('')+emptySeats(5-red.length);
-    $('#bluePlayers').innerHTML=blue.map((n,i)=>make(n,i===0)).join('')+emptySeats(5-blue.length);
+    $('#redPlayers').innerHTML=redEntries.map(([uid,p])=>make(p.name,uid===state.hostUid)).join('')+emptySeats(5-red.length);
+    $('#bluePlayers').innerHTML=blueEntries.map(([uid,p])=>make(p.name,uid===state.hostUid)).join('')+emptySeats(5-blue.length);
     $('.roster--red .roster__head>b').textContent=`${red.length}/5`; $('.roster--blue .roster__head>b').textContent=`${blue.length}/5`;
     $('#lobbyStatus').textContent=`${red.length+blue.length}/10`;
-    const ready=red.length===5&&blue.length===5; $('#startGame').disabled=!ready; $('#startGame').textContent=ready?'ابدأ المباراة':'بانتظار اللاعبين'; $('#lobbyHint').textContent=ready?'اكتمل الفريقان — المعركة جاهزة!':'يجب اكتمال الفريقين 5/5 لبدء المباراة';
+    const isHost=auth.currentUser?.uid===state.hostUid, ready=red.length===5&&blue.length===5; $('#startGame').disabled=!ready||!isHost; $('#startGame').textContent=isHost?(ready?'ابدأ المباراة':'بانتظار اللاعبين'):'القائد يبدأ المباراة'; $('#lobbyHint').textContent=ready?'اكتمل الفريقان — المعركة جاهزة!':'يجب اكتمال الفريقين 5/5 لبدء المباراة';
   }
   renderLobby();
   function generateCode(){ const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; return Array.from({length:6},()=>chars[Math.floor(Math.random()*chars.length)]).join(''); }
-  $('#createForm').addEventListener('submit', e => { e.preventDefault(); const inputs=$$('.team-input input'); state.redName=inputs[0].value||'الفريق الأحمر'; state.blueName=inputs[1].value||'الفريق الأزرق'; $('#redTeamTitle').textContent=state.redName; $('#blueTeamTitle').textContent=state.blueName; $('#roomCode').textContent=generateCode(); state.selectedTeam='red'; const leader=auth.currentUser?.displayName||auth.currentUser?.email?.split('@')[0]||'قائد الغرفة'; renderLobby(leader); showView('lobby'); toast('تم إنشاء الغرفة — بانتظار بقية اللاعبين'); });
-  $('#joinForm').addEventListener('submit', e => { e.preventDefault(); const name=$('#playerName').value.trim(); if(!name) return; $('#roomCode').textContent=$('#roomCodeInput').value.toUpperCase(); renderLobby(name); showView('lobby'); toast(`مرحبًا ${name}، انضممت إلى الفريق`); });
+  async function hashPassword(value){ if(!value)return ''; const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)); return [...new Uint8Array(bytes)].map(b=>b.toString(16).padStart(2,'0')).join(''); }
+  function requireLogin(){ if(auth.currentUser)return true; modal.classList.add('open'); toast('سجّل الدخول أولًا لإنشاء غرفة أو الانضمام'); return false; }
+  function watchRoom(code){ if(state.roomUnsubscribe)state.roomUnsubscribe(); const roomReference=ref(db,`rooms/${code}`); state.roomUnsubscribe=onValue(roomReference,snapshot=>{ if(!snapshot.exists()){toast('تم إغلاق الغرفة');state.roomCode='';showView('home');return} const data=snapshot.val();renderLobby(data);if(data.status==='started'&&!$('#gameView').classList.contains('active'))beginGame((data.questionOrder||[]).map(i=>questions[i])); },()=>toast('تعذر قراءة بيانات الغرفة')); }
+  async function occupySeat(code,team,name){ const playerReference=ref(db,`rooms/${code}/teams/${team}/${auth.currentUser.uid}`); await set(playerReference,{name,joinedAt:serverTimestamp()}); state.disconnectTask=onDisconnect(playerReference); await state.disconnectTask.remove(); state.currentPlayer=name; state.roomCode=code; $('#roomCode').textContent=code; watchRoom(code); showView('lobby'); }
+  $('#createForm').addEventListener('submit',async e=>{ e.preventDefault(); if(!requireLogin())return; const submit=e.submitter;submit.disabled=true;try{const inputs=$$('.team-input input'),password=$('#createForm input[type="password"]').value;state.redName=inputs[0].value.trim();state.blueName=inputs[1].value.trim();let code;do{code=generateCode()}while((await get(ref(db,`rooms/${code}`))).exists());const leader=auth.currentUser.displayName||auth.currentUser.email.split('@')[0];await set(ref(db,`rooms/${code}`),{hostUid:auth.currentUser.uid,redName:state.redName,blueName:state.blueName,passwordHash:await hashPassword(password),status:'waiting',createdAt:serverTimestamp(),teams:{red:{[auth.currentUser.uid]:{name:leader,joinedAt:serverTimestamp()}}}});state.selectedTeam='red';await occupySeat(code,'red',leader);toast('تم إنشاء الغرفة — شارك الكود مع اللاعبين')}catch(error){toast(error.code==='PERMISSION_DENIED'?'انشر قواعد قاعدة البيانات أولًا':'تعذر إنشاء الغرفة')}finally{submit.disabled=false} });
+  $('#joinForm').addEventListener('submit',async e=>{ e.preventDefault(); if(!requireLogin())return; const submit=e.submitter,name=$('#playerName').value.trim(),code=$('#roomCodeInput').value.trim().toUpperCase();submit.disabled=true;try{const snapshot=await get(ref(db,`rooms/${code}`));if(!snapshot.exists()){toast('كود الغرفة غير موجود');return}const room=snapshot.val();if(room.status!=='waiting'){toast('المباراة بدأت ولا يمكن الانضمام الآن');return}if(room.passwordHash&&room.passwordHash!==await hashPassword($('#joinPassword').value)){toast('كلمة مرور الغرفة غير صحيحة');return}const members=Object.keys(room.teams?.[state.selectedTeam]||{});if(members.length>=5){toast('هذا الفريق مكتمل، اختر الفريق الآخر');return}if(room.teams?.red?.[auth.currentUser.uid]||room.teams?.blue?.[auth.currentUser.uid]){toast('أنت منضم إلى هذه الغرفة بالفعل');return}await occupySeat(code,state.selectedTeam,name);toast(`مرحبًا ${name}، تم انضمامك فعليًا`)}catch(error){toast(error.code==='PERMISSION_DENIED'?'تعذر الانضمام: تحقق من قواعد قاعدة البيانات':'تعذر الانضمام الآن')}finally{submit.disabled=false} });
+  async function leaveRoom(ask=true){if(!state.roomCode)return true;const isHost=auth.currentUser?.uid===state.hostUid,message=isHost?'أنت قائد الغرفة. المغادرة ستغلق الغرفة للجميع، هل أنت متأكد؟':'هل تريد مغادرة الغرفة؟ سيصبح مقعدك فارغًا.';if(ask&&!confirm(message))return false;const code=state.roomCode;try{await state.disconnectTask?.cancel();if(isHost)await remove(ref(db,`rooms/${code}`));else{await remove(ref(db,`rooms/${code}/teams/red/${auth.currentUser.uid}`));await remove(ref(db,`rooms/${code}/teams/blue/${auth.currentUser.uid}`))}}catch{}state.roomUnsubscribe?.();state.roomUnsubscribe=null;state.roomCode='';renderLobby();showView('home');toast(isHost?'تم إغلاق الغرفة':'غادرت الغرفة');return true}
+  $('#leaveRoom').addEventListener('click',()=>leaveRoom(true));
   $('#copyCode').addEventListener('click', async () => { try{ await navigator.clipboard.writeText($('#roomCode').textContent); toast('تم نسخ كود الغرفة'); } catch{ toast(`كود الغرفة: ${$('#roomCode').textContent}`); } });
 
   // دورة المباراة: سؤال، مؤقت، كشف الإجابة، ثم انتقال تلقائي.
-  function startGame(){ if(state.redPlayers.length!==5||state.bluePlayers.length!==5){toast(`لا يمكن البدء: الأحمر ${state.redPlayers.length}/5 والأزرق ${state.bluePlayers.length}/5`);return} state.question=0; state.redScore=0; state.blueScore=0; $('#gameRedName').textContent=state.redName; $('#gameBlueName').textContent=state.blueName; renderGamePlayers(); showView('game'); renderQuestion(); }
+  function arrangeQuestions(){ return [...questions].sort(()=>Math.random()-.5); }
+  async function startGame(){ if(state.redPlayers.length!==5||state.bluePlayers.length!==5){toast(`لا يمكن البدء: الأحمر ${state.redPlayers.length}/5 والأزرق ${state.bluePlayers.length}/5`);return}if(auth.currentUser?.uid!==state.hostUid){toast('قائد الغرفة فقط يستطيع بدء المباراة');return}const order=questions.map((_,i)=>i).sort(()=>Math.random()-.5);try{await update(ref(db,`rooms/${state.roomCode}`),{status:'started',questionOrder:order,startedAt:serverTimestamp()})}catch{toast('تعذر بدء المباراة')} }
+  function beginGame(orderedQuestions){ if(!orderedQuestions.length)return; state.question=0; state.gameQuestions=orderedQuestions; state.redScore=0; state.blueScore=0; $('#gameRedName').textContent=state.redName; $('#gameBlueName').textContent=state.blueName; renderGamePlayers(); showView('game'); renderQuestion(); }
   function renderGamePlayers(){
     const playerCard=name=>`<div class="game-player ${name===state.currentPlayer?'you':''}"><span class="avatar">${name[0]}</span><small>${name}</small></div>`;
     $('#gameRedPlayers').innerHTML=state.redPlayers.map(playerCard).join('');
@@ -70,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   function renderQuestion(){
     clearInterval(state.timerId); state.answered=false; state.timer=15;
-    const q=questions[state.question]; $('#questionText').textContent=q.text; $('#questionCategory').textContent=q.category; $('#questionCount').textContent=`السؤال ${state.question+1} من ${questions.length}`; $('#questionProgress').style.width=`${((state.question+1)/questions.length)*100}%`; $('#answerStatus').className='answer-status'; $('#answerStatus').textContent='اختر الإجابة الصحيحة قبل انتهاء الوقت';
+    const q=state.gameQuestions[state.question]; $('#questionText').textContent=q.text; $('#questionCategory').textContent=q.category; $('#questionCount').textContent=`السؤال ${state.question+1} من ${state.gameQuestions.length}`; $('#questionProgress').style.width=`${((state.question+1)/state.gameQuestions.length)*100}%`; $('#answerStatus').className='answer-status'; $('#answerStatus').textContent='اختر الإجابة الصحيحة قبل انتهاء الوقت';
     $('#answers').innerHTML=q.options.map((opt,i)=>`<button class="answer" data-index="${i}"><b>${['أ','ب','ج','د'][i]}</b><span>${opt}</span></button>`).join('');
     $$('.answer').forEach(b=>b.addEventListener('click',()=>selectAnswer(+b.dataset.index)));
     updateTimer(); state.timerId=setInterval(()=>{ state.timer--; updateTimer(); if(state.timer<=0){ clearInterval(state.timerId); revealAnswer(-1); } },1000);
@@ -78,11 +92,11 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateTimer(){ $('#timerValue').textContent=state.timer; const pct=(state.timer/15)*100; $('#timer').style.setProperty('--timer-progress',`${pct}%`); $('#timer').classList.toggle('danger',state.timer<=5); }
   function selectAnswer(index){ if(state.answered)return; clearInterval(state.timerId); revealAnswer(index); }
   function revealAnswer(index){
-    state.answered=true; const q=questions[state.question]; const buttons=$$('.answer'); buttons.forEach(b=>b.disabled=true); buttons[q.answer].classList.add('correct');
+    state.answered=true; const q=state.gameQuestions[state.question]; const buttons=$$('.answer'); buttons.forEach(b=>b.disabled=true); buttons[q.answer].classList.add('correct');
     const correct=index===q.answer; if(index>=0&&!correct)buttons[index].classList.add('wrong');
     if(correct){ const points=100+state.timer*5; state.redScore+=points; $('#answerStatus').textContent=`إجابة صحيحة! +${points} نقطة`; $('#answerStatus').classList.add('correct'); } else { state.blueScore+=80; $('#answerStatus').textContent=index<0?'انتهى الوقت!':'إجابة غير صحيحة'; $('#answerStatus').classList.add('wrong'); }
     $('#redScore').textContent=state.redScore; $('#blueScore').textContent=state.blueScore;
-    setTimeout(()=>{ state.question++; if(state.question<questions.length) renderQuestion(); else finishGame(); },1800);
+    setTimeout(()=>{ state.question++; if(state.question<state.gameQuestions.length) renderQuestion(); else finishGame(); },1800);
   }
   function finishGame(){ clearInterval(state.timerId); $('#finalRed').textContent=state.redScore; $('#finalBlue').textContent=state.blueScore; $('#finalTeamNames').innerHTML=`${state.redName} <b>—</b> ${state.blueName}`; $('.result-hero h2').textContent=state.redScore>=state.blueScore?`${state.redName} ينتصر!`:`${state.blueName} ينتصر!`; renderStats(); showView('result'); launchConfetti(); }
   $('#startGame').addEventListener('click',startGame); $('#playAgain').addEventListener('click',startGame);

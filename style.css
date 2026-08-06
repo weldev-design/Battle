@@ -20,3 +20,4 @@
 @media(max-width:800px){.active-players{grid-template-columns:1fr}.active-squad--blue{direction:rtl}.active-squad--blue .squad-members{direction:rtl}.active-squad--blue .game-player{margin-right:0;margin-left:5px}}
 @media(max-width:520px){.active-squad{display:block}.squad-label{display:block;margin-bottom:7px}.squad-members{overflow-x:auto;padding-bottom:3px}.game-player small{font-size:9px}.auth-card{padding:22px 17px}}
 .login-btn.signed-in{border-color:rgba(49,230,161,.35);background:rgba(49,230,161,.08)}.login-btn.signed-in .icon{width:25px;height:25px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(145deg,#526fff,#8b5cf6);font-size:11px}.google-btn:disabled,.btn:disabled{opacity:.55;cursor:wait;transform:none}
+.leave-room{width:100%;margin-top:9px;color:#ff8295;border-color:rgba(255,77,109,.2)}

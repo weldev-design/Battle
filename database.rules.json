@@ -1,0 +1,24 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "rooms": {
+      "$code": {
+        ".read": "auth != null",
+        ".write": "auth != null && ((!data.exists() && newData.child('hostUid').val() === auth.uid) || (data.exists() && data.child('hostUid').val() === auth.uid))",
+        "teams": {
+          "$team": {
+            "$uid": {
+              ".write": "auth != null && $uid === auth.uid && root.child('rooms').child($code).child('status').val() === 'waiting'",
+              ".validate": "!newData.exists() || (newData.hasChildren(['name', 'joinedAt']) && newData.child('name').isString() && newData.child('name').val().length > 0 && newData.child('name').val().length <= 18)"
+            }
+          }
+        },
+        "status": {
+          ".write": "auth != null && data.parent().child('hostUid').val() === auth.uid",
+          ".validate": "newData.val() === 'waiting' || newData.val() === 'started' || newData.val() === 'finished'"
+        }
+      }
+    }
+  }
+}
