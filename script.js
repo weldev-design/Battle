@@ -12,7 +12,7 @@ const googleProvider = new GoogleAuthProvider();
 document.addEventListener('DOMContentLoaded', () => {
   const $ = (s, root = document) => root.querySelector(s);
   const $$ = (s, root = document) => [...root.querySelectorAll(s)];
-  const state = { selectedTeam: 'red', redName: 'الصقور', blueName: 'العواصف', redPlayers: [], bluePlayers: [], currentPlayer: '', redScore: 0, blueScore: 0, question: 0, timer: 15, timerId: null, answered: false };
+  const state = { selectedTeam: 'red', redName: 'الفريق الأحمر', blueName: 'الفريق الأزرق', redPlayers: [], bluePlayers: [], currentPlayer: '', redScore: 0, blueScore: 0, question: 0, timer: 15, timerId: null, answered: false };
 
   // بيانات تجريبية للمباراة (استبدلها لاحقًا ببيانات API).
   const questions = [
@@ -43,24 +43,26 @@ document.addEventListener('DOMContentLoaded', () => {
   $$('.choice-group').forEach(group => group.addEventListener('click', e => { if(e.target.tagName==='BUTTON'){ $$('button',group).forEach(b=>b.classList.remove('selected')); e.target.classList.add('selected'); } }));
   $$('.team-choice').forEach(btn => btn.addEventListener('click', () => { $$('.team-choice').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); state.selectedTeam=btn.dataset.team; }));
 
-  const names = ['أحمد','سارة','محمد','ليان','خالد'];
   function renderLobby(extraName='') {
     const make = (name, leader=false) => `<div class="player"><span class="avatar">${name[0]}</span><strong>${name}</strong><small>${leader?'قائد':'●'}</small></div>`;
-    const red=[...names.slice(0,4)], blue=['نور','عمر','جود','مازن','ريم'];
-    if(extraName){ const arr=state.selectedTeam==='red'?red:blue; if(arr.length<5) arr.push(extraName); }
+    const red=[], blue=[];
+    if(extraName){ const arr=state.selectedTeam==='red'?red:blue; arr.push(extraName); }
     state.redPlayers=red; state.bluePlayers=blue; state.currentPlayer=extraName;
-    $('#redPlayers').innerHTML=red.map((n,i)=>make(n,i===0)).join('')+(red.length<5?'<div class="player empty">＋ مقعد فارغ</div>':'');
-    $('#bluePlayers').innerHTML=blue.map((n,i)=>make(n,i===0)).join('')+(blue.length<5?'<div class="player empty">＋ مقعد فارغ</div>':'');
+    const emptySeats=count=>Array.from({length:count},()=>'<div class="player empty">＋ مقعد فارغ</div>').join('');
+    $('#redPlayers').innerHTML=red.map((n,i)=>make(n,i===0)).join('')+emptySeats(5-red.length);
+    $('#bluePlayers').innerHTML=blue.map((n,i)=>make(n,i===0)).join('')+emptySeats(5-blue.length);
+    $('.roster--red .roster__head>b').textContent=`${red.length}/5`; $('.roster--blue .roster__head>b').textContent=`${blue.length}/5`;
     $('#lobbyStatus').textContent=`${red.length+blue.length}/10`;
+    const ready=red.length===5&&blue.length===5; $('#startGame').disabled=!ready; $('#startGame').textContent=ready?'ابدأ المباراة':'بانتظار اللاعبين'; $('#lobbyHint').textContent=ready?'اكتمل الفريقان — المعركة جاهزة!':'يجب اكتمال الفريقين 5/5 لبدء المباراة';
   }
   renderLobby();
   function generateCode(){ const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; return Array.from({length:6},()=>chars[Math.floor(Math.random()*chars.length)]).join(''); }
-  $('#createForm').addEventListener('submit', e => { e.preventDefault(); const inputs=$$('.team-input input'); state.redName=inputs[0].value||'الفريق الأحمر'; state.blueName=inputs[1].value||'الفريق الأزرق'; $('#redTeamTitle').textContent=state.redName; $('#blueTeamTitle').textContent=state.blueName; $('#roomCode').textContent=generateCode(); renderLobby(); showView('lobby'); toast('تم إنشاء الغرفة بنجاح'); });
+  $('#createForm').addEventListener('submit', e => { e.preventDefault(); const inputs=$$('.team-input input'); state.redName=inputs[0].value||'الفريق الأحمر'; state.blueName=inputs[1].value||'الفريق الأزرق'; $('#redTeamTitle').textContent=state.redName; $('#blueTeamTitle').textContent=state.blueName; $('#roomCode').textContent=generateCode(); state.selectedTeam='red'; const leader=auth.currentUser?.displayName||auth.currentUser?.email?.split('@')[0]||'قائد الغرفة'; renderLobby(leader); showView('lobby'); toast('تم إنشاء الغرفة — بانتظار بقية اللاعبين'); });
   $('#joinForm').addEventListener('submit', e => { e.preventDefault(); const name=$('#playerName').value.trim(); if(!name) return; $('#roomCode').textContent=$('#roomCodeInput').value.toUpperCase(); renderLobby(name); showView('lobby'); toast(`مرحبًا ${name}، انضممت إلى الفريق`); });
   $('#copyCode').addEventListener('click', async () => { try{ await navigator.clipboard.writeText($('#roomCode').textContent); toast('تم نسخ كود الغرفة'); } catch{ toast(`كود الغرفة: ${$('#roomCode').textContent}`); } });
 
   // دورة المباراة: سؤال، مؤقت، كشف الإجابة، ثم انتقال تلقائي.
-  function startGame(){ state.question=0; state.redScore=0; state.blueScore=0; $('#gameRedName').textContent=state.redName; $('#gameBlueName').textContent=state.blueName; renderGamePlayers(); showView('game'); renderQuestion(); }
+  function startGame(){ if(state.redPlayers.length!==5||state.bluePlayers.length!==5){toast(`لا يمكن البدء: الأحمر ${state.redPlayers.length}/5 والأزرق ${state.bluePlayers.length}/5`);return} state.question=0; state.redScore=0; state.blueScore=0; $('#gameRedName').textContent=state.redName; $('#gameBlueName').textContent=state.blueName; renderGamePlayers(); showView('game'); renderQuestion(); }
   function renderGamePlayers(){
     const playerCard=name=>`<div class="game-player ${name===state.currentPlayer?'you':''}"><span class="avatar">${name[0]}</span><small>${name}</small></div>`;
     $('#gameRedPlayers').innerHTML=state.redPlayers.map(playerCard).join('');
@@ -82,10 +84,10 @@ document.addEventListener('DOMContentLoaded', () => {
     $('#redScore').textContent=state.redScore; $('#blueScore').textContent=state.blueScore;
     setTimeout(()=>{ state.question++; if(state.question<questions.length) renderQuestion(); else finishGame(); },1800);
   }
-  function finishGame(){ clearInterval(state.timerId); $('#finalRed').textContent=state.redScore; $('#finalBlue').textContent=state.blueScore; $('.result-hero h2').textContent=state.redScore>=state.blueScore?`${state.redName} ينتصر!`:`${state.blueName} ينتصر!`; renderStats(); showView('result'); launchConfetti(); }
+  function finishGame(){ clearInterval(state.timerId); $('#finalRed').textContent=state.redScore; $('#finalBlue').textContent=state.blueScore; $('#finalTeamNames').innerHTML=`${state.redName} <b>—</b> ${state.blueName}`; $('.result-hero h2').textContent=state.redScore>=state.blueScore?`${state.redName} ينتصر!`:`${state.blueName} ينتصر!`; renderStats(); showView('result'); launchConfetti(); }
   $('#startGame').addEventListener('click',startGame); $('#playAgain').addEventListener('click',startGame);
 
-  function renderStats(){ const data=[['سارة',4,1,'3.2ث'],['أحمد',3,2,'4.1ث'],['نور',3,2,'4.8ث'],['محمد',2,3,'5.3ث']]; $('#statsRows').innerHTML=data.map((p,i)=>`<div class="stat-row"><b>${i+1}</b><strong>${p[0]}</strong><span class="right">${p[1]}</span><span class="wrong">${p[2]}</span><small>${p[3]}</small></div>`).join(''); }
+  function renderStats(){ const players=[...state.redPlayers,...state.bluePlayers]; $('#statsRows').innerHTML=players.length?players.map((name,i)=>`<div class="stat-row"><b>${i+1}</b><strong>${name}</strong><span class="right">—</span><span class="wrong">—</span><small>—</small></div>`).join(''):'<div class="empty-board"><h3>لا توجد بيانات لاعبين</h3><p>تظهر الإحصائيات بعد مشاركة لاعبين حقيقيين.</p></div>'; $('#mvpName').textContent='يُحدد من النتائج الحقيقية'; $('#mvpAvatar').textContent='?'; $('#mvpSummary').textContent='لا توجد بيانات وهمية'; $('#mvpXp').textContent='—'; }
   function launchConfetti(){ for(let i=0;i<50;i++){ const c=document.createElement('i'); Object.assign(c.style,{position:'fixed',zIndex:'90',top:'-12px',left:`${Math.random()*100}%`,width:'7px',height:'12px',background:['#557cff','#9b66ff','#ff4d6d','#ffd35c'][i%4],transform:`rotate(${Math.random()*180}deg)`,transition:`transform ${2+Math.random()*2}s linear, top ${2+Math.random()*2}s ease-in`}); document.body.appendChild(c); requestAnimationFrame(()=>{c.style.top='105vh';c.style.transform+=` translateX(${Math.random()*240-120}px) rotate(720deg)`}); setTimeout(()=>c.remove(),4200); } }
 
   // تبدأ لوحة المتصدرين فارغة، وتُملأ لاحقًا بنتائج اللاعبين الحقيقية من الخادم.

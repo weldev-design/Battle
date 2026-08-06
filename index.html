@@ -45,16 +45,16 @@
             <button class="btn btn--primary btn--large" data-view="create"><span>＋</span> إنشاء غرفة</button>
             <button class="btn btn--glass btn--large" data-view="join"><span>↪</span> انضم إلى غرفة</button>
           </div>
-          <div class="live-strip"><span class="avatars"><i>م</i><i>س</i><i>ر</i><i>+2K</i></span><strong>+2,400</strong> لاعب يتنافسون الآن <b></b></div>
+          <div class="live-strip"><span class="avatars"><i>?</i><i>?</i><i>?</i></span><strong>المباريات الحقيقية</strong> تظهر عند انضمام اللاعبين <b></b></div>
         </div>
 
         <!-- بطاقة مواجهة حية -->
         <div class="battle-card glass tilt-card">
           <div class="battle-card__top"><span><i class="live-dot"></i> مباراة مباشرة</span><small>السؤال 7 من 10</small></div>
           <div class="teams-preview">
-            <div class="team team--red"><div class="team__crest">🔥</div><div><small>الفريق الأحمر</small><strong>الصقور</strong></div><b>420</b></div>
+            <div class="team team--red"><div class="team__crest">🔥</div><div><small>الفريق الأحمر</small><strong>بانتظار فريق</strong></div><b>0</b></div>
             <div class="versus"><span>VS</span><small>00:14</small></div>
-            <div class="team team--blue"><div class="team__crest">⚡</div><div><small>الفريق الأزرق</small><strong>العواصف</strong></div><b>390</b></div>
+            <div class="team team--blue"><div class="team__crest">⚡</div><div><small>الفريق الأزرق</small><strong>بانتظار فريق</strong></div><b>0</b></div>
           </div>
           <div class="mini-question"><small>الجغرافيا</small><strong>ما هي أكبر قارة في العالم من حيث المساحة؟</strong><div class="mini-options"><span>أوروبا</span><span class="selected">آسيا ✓</span><span>أفريقيا</span><span>أمريكا</span></div></div>
           <div class="battle-card__foot"><span>أجاب 8 من 10 لاعبين</span><div class="progress"><i></i></div></div>
@@ -77,8 +77,8 @@
           <label class="field"><span>وقت كل سؤال</span><div class="choice-group" data-name="time"><button type="button">10 ث</button><button type="button" class="selected">15 ث</button><button type="button">20 ث</button><button type="button">30 ث</button></div></label>
           <label class="field"><span>نوع الأسئلة</span><select id="category"><option>أسئلة متنوعة</option><option>علوم وتقنية</option><option>تاريخ وحضارات</option><option>رياضة</option><option>جغرافيا</option><option>ثقافة عامة</option></select></label>
           <label class="field"><span>كلمة مرور <em>اختياري</em></span><div class="input-wrap"><span>🔒</span><input type="password" placeholder="اتركها فارغة لغرفة عامة"></div></label>
-          <label class="field team-input red"><span>اسم الفريق الأحمر</span><div class="input-wrap"><span>🔥</span><input required value="الصقور" maxlength="18"></div></label>
-          <label class="field team-input blue"><span>اسم الفريق الأزرق</span><div class="input-wrap"><span>⚡</span><input required value="العواصف" maxlength="18"></div></label>
+          <label class="field team-input red"><span>اسم الفريق الأحمر</span><div class="input-wrap"><span>🔥</span><input required placeholder="اكتب اسم الفريق" maxlength="18"></div></label>
+          <label class="field team-input blue"><span>اسم الفريق الأزرق</span><div class="input-wrap"><span>⚡</span><input required placeholder="اكتب اسم الفريق" maxlength="18"></div></label>
         </div>
         <div class="form-footer"><div class="hint">🔐 يمكنك تعديل الإعدادات قبل بدء المباراة</div><button class="btn btn--primary btn--large" type="submit">إنشاء الغرفة <span>←</span></button></div>
       </form>
@@ -92,8 +92,8 @@
         <label class="field"><span>كود الغرفة</span><div class="code-input"><input id="roomCodeInput" required maxlength="6" placeholder="A7X9Q2" autocomplete="off"></div></label>
         <span class="field-label">اختر فريقك</span>
         <div class="team-select">
-          <button type="button" class="team-choice red selected" data-team="red"><span class="radio"></span><i>🔥</i><strong>الفريق الأحمر</strong><small>4 / 5 لاعبين</small><div class="slots"><b></b><b></b><b></b><b></b><b class="empty"></b></div></button>
-          <button type="button" class="team-choice blue" data-team="blue"><span class="radio"></span><i>⚡</i><strong>الفريق الأزرق</strong><small>3 / 5 لاعبين</small><div class="slots"><b></b><b></b><b></b><b class="empty"></b><b class="empty"></b></div></button>
+          <button type="button" class="team-choice red selected" data-team="red"><span class="radio"></span><i>🔥</i><strong>الفريق الأحمر</strong><small>يظهر العدد بعد التحقق</small><div class="slots"><b class="empty"></b><b class="empty"></b><b class="empty"></b><b class="empty"></b><b class="empty"></b></div></button>
+          <button type="button" class="team-choice blue" data-team="blue"><span class="radio"></span><i>⚡</i><strong>الفريق الأزرق</strong><small>يظهر العدد بعد التحقق</small><div class="slots"><b class="empty"></b><b class="empty"></b><b class="empty"></b><b class="empty"></b><b class="empty"></b></div></button>
         </div>
         <button class="btn btn--primary btn--large full" type="submit">الانضمام الآن <span>←</span></button>
       </form>
@@ -103,15 +103,15 @@
     <section class="view inner-view" id="lobbyView">
       <div class="lobby-head"><div><span class="eyebrow"><i></i> الغرفة جاهزة</span><h2>بانتظار اكتمال الفريقين</h2></div><div class="room-code"><small>كود الغرفة</small><strong id="roomCode">BQ7X92</strong><button id="copyCode" aria-label="نسخ الكود">▣</button></div></div>
       <div class="lobby-grid">
-        <div class="roster roster--red"><div class="roster__head"><span>🔥</span><div><small>الفريق الأحمر</small><strong id="redTeamTitle">الصقور</strong></div><b>4/5</b></div><div class="players" id="redPlayers"></div></div>
-        <div class="lobby-center"><span>VS</span><strong id="lobbyStatus">9/10</strong><small>لاعبين جاهزين</small><button class="btn btn--primary" id="startGame">ابدأ المباراة</button><p>يمكن لقائد الغرفة بدء مباراة تجريبية</p></div>
-        <div class="roster roster--blue"><div class="roster__head"><span>⚡</span><div><small>الفريق الأزرق</small><strong id="blueTeamTitle">العواصف</strong></div><b>5/5</b></div><div class="players" id="bluePlayers"></div></div>
+        <div class="roster roster--red"><div class="roster__head"><span>🔥</span><div><small>الفريق الأحمر</small><strong id="redTeamTitle">لم يُسمّ بعد</strong></div><b>0/5</b></div><div class="players" id="redPlayers"></div></div>
+        <div class="lobby-center"><span>VS</span><strong id="lobbyStatus">0/10</strong><small>لاعبين جاهزين</small><button class="btn btn--primary" id="startGame" disabled>بانتظار اللاعبين</button><p id="lobbyHint">يجب اكتمال الفريقين 5/5 لبدء المباراة</p></div>
+        <div class="roster roster--blue"><div class="roster__head"><span>⚡</span><div><small>الفريق الأزرق</small><strong id="blueTeamTitle">لم يُسمّ بعد</strong></div><b>0/5</b></div><div class="players" id="bluePlayers"></div></div>
       </div>
     </section>
 
     <!-- شاشة المباراة -->
     <section class="view game-view" id="gameView">
-      <div class="game-score"><div class="score-team red"><span>🔥</span><div><small id="gameRedName">الصقور</small><strong id="redScore">0</strong></div></div><div class="timer-wrap"><div class="timer" id="timer"><strong id="timerValue">15</strong><small>ثانية</small></div></div><div class="score-team blue"><div><small id="gameBlueName">العواصف</small><strong id="blueScore">0</strong></div><span>⚡</span></div></div>
+      <div class="game-score"><div class="score-team red"><span>🔥</span><div><small id="gameRedName">الفريق الأحمر</small><strong id="redScore">0</strong></div></div><div class="timer-wrap"><div class="timer" id="timer"><strong id="timerValue">15</strong><small>ثانية</small></div></div><div class="score-team blue"><div><small id="gameBlueName">الفريق الأزرق</small><strong id="blueScore">0</strong></div><span>⚡</span></div></div>
       <div class="active-players" aria-label="اللاعبون في المباراة"><div class="active-squad active-squad--red"><span class="squad-label"><i></i> يلعب الآن</span><div class="squad-members" id="gameRedPlayers"></div></div><div class="active-squad active-squad--blue"><span class="squad-label"><i></i> يلعب الآن</span><div class="squad-members" id="gameBluePlayers"></div></div></div>
       <div class="question-meta"><span id="questionCount">السؤال 1 من 5</span><div class="question-progress"><i id="questionProgress"></i></div><b id="questionCategory">جغرافيا</b></div>
       <div class="question-box"><div class="question-number">؟</div><h2 id="questionText">ما هي أكبر قارة في العالم من حيث المساحة؟</h2><div class="answers" id="answers"></div><div class="answer-status" id="answerStatus">اختر الإجابة الصحيحة قبل انتهاء الوقت</div></div>
@@ -119,8 +119,8 @@
 
     <!-- نهاية المباراة -->
     <section class="view inner-view" id="resultView">
-      <div class="result-hero"><div class="trophy">🏆</div><span class="eyebrow">انتهت المعركة</span><h2>الفريق الأحمر ينتصر!</h2><p>مباراة رائعة حُسمت بفارق بسيط من النقاط</p><div class="final-score"><strong id="finalRed">420</strong><span>الصقور <b>—</b> العواصف</span><strong id="finalBlue">390</strong></div></div>
-      <div class="result-grid"><div class="panel mvp-card"><span class="mvp-badge">MVP</span><div class="avatar big">س</div><div><small>أفضل لاعب في المباراة</small><h3>سـارة</h3><p>4 إجابات صحيحة • متوسط 3.2 ثانية</p></div><strong>+380 XP</strong></div><div class="panel stats-card"><div class="card-title"><h3>إحصائيات اللاعبين</h3><span>الصحيحة / الخاطئة / السرعة</span></div><div id="statsRows"></div></div></div>
+      <div class="result-hero"><div class="trophy">🏆</div><span class="eyebrow">انتهت المعركة</span><h2>اكتملت المباراة</h2><p>تُعرض هنا النتيجة الحقيقية للمواجهة</p><div class="final-score"><strong id="finalRed">0</strong><span id="finalTeamNames">الفريق الأحمر <b>—</b> الفريق الأزرق</span><strong id="finalBlue">0</strong></div></div>
+      <div class="result-grid"><div class="panel mvp-card"><span class="mvp-badge">MVP</span><div class="avatar big" id="mvpAvatar">?</div><div><small>أفضل لاعب في المباراة</small><h3 id="mvpName">يُحدد بعد المباراة</h3><p id="mvpSummary">حسب الإجابات الحقيقية وسرعة اللاعبين</p></div><strong id="mvpXp">—</strong></div><div class="panel stats-card"><div class="card-title"><h3>إحصائيات اللاعبين</h3><span>الصحيحة / الخاطئة / السرعة</span></div><div id="statsRows"></div></div></div>
       <div class="result-actions"><button class="btn btn--glass" data-view="home">العودة للرئيسية</button><button class="btn btn--primary" id="playAgain">العب مجددًا ↻</button></div>
     </section>
 
