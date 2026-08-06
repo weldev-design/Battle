@@ -73,6 +73,7 @@
       <div class="section-heading"><button class="back-btn" data-view="home">←</button><div><span class="eyebrow">جهّز ساحة المنافسة</span><h2>إنشاء غرفة جديدة</h2><p>اختر إعدادات المعركة وشارك الكود مع فريقك.</p></div></div>
       <form class="panel form-panel" id="createForm">
         <div class="form-grid">
+          <label class="field"><span>اسم قائد الغرفة</span><div class="input-wrap"><span>♙</span><input id="captainName" required maxlength="16" placeholder="اكتب اسمك داخل اللعبة"></div></label>
           <label class="field"><span>عدد الأسئلة</span><div class="choice-group" data-name="questions"><button type="button">10</button><button type="button" class="selected">20</button><button type="button">30</button><button type="button">50</button><button type="button">100</button></div></label>
           <label class="field"><span>إجمالي عدد اللاعبين</span><select id="playerCount"><option value="2">لاعبان — 1 ضد 1</option><option value="3">3 لاعبين — 2 ضد 1</option><option value="4">4 لاعبين — 2 ضد 2</option><option value="5">5 لاعبين — 3 ضد 2</option><option value="6">6 لاعبين — 3 ضد 3</option><option value="7">7 لاعبين — 4 ضد 3</option><option value="8">8 لاعبين — 4 ضد 4</option><option value="9">9 لاعبين — 5 ضد 4</option><option value="10" selected>10 لاعبين — 5 ضد 5</option></select></label>
           <label class="field"><span>وقت كل سؤال</span><div class="choice-group" data-name="time"><button type="button">10 ث</button><button type="button" class="selected">15 ث</button><button type="button">20 ث</button><button type="button">30 ث</button></div></label>
@@ -92,11 +93,7 @@
         <label class="field"><span>اسم اللاعب</span><div class="input-wrap"><span>♙</span><input id="playerName" required maxlength="16" placeholder="اكتب اسمك هنا"></div></label>
         <label class="field"><span>كود الغرفة</span><div class="code-input"><input id="roomCodeInput" required maxlength="6" placeholder="A7X9Q2" autocomplete="off"></div></label>
         <label class="field"><span>كلمة مرور الغرفة <em>إذا كانت مطلوبة</em></span><div class="input-wrap"><span>🔒</span><input id="joinPassword" type="password" placeholder="اتركها فارغة للغرف العامة"></div></label>
-        <span class="field-label">اختر فريقك</span>
-        <div class="team-select">
-          <button type="button" class="team-choice red selected" data-team="red"><span class="radio"></span><i>🔥</i><strong>الفريق الأحمر</strong><small>يظهر العدد بعد التحقق</small><div class="slots"><b class="empty"></b><b class="empty"></b><b class="empty"></b><b class="empty"></b><b class="empty"></b></div></button>
-          <button type="button" class="team-choice blue" data-team="blue"><span class="radio"></span><i>⚡</i><strong>الفريق الأزرق</strong><small>يظهر العدد بعد التحقق</small><div class="slots"><b class="empty"></b><b class="empty"></b><b class="empty"></b><b class="empty"></b><b class="empty"></b></div></button>
-        </div>
+        <div class="auto-team"><span>⚖</span><div><strong>توزيع تلقائي عادل</strong><small>سيختار النظام فريقك عشوائيًا ويحافظ على توازن العدد.</small></div></div>
         <button class="btn btn--primary btn--large full" type="submit">الانضمام الآن <span>←</span></button>
       </form>
     </section>
