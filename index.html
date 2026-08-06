@@ -29,7 +29,7 @@
       <button data-view="leaderboard" class="nav__link">المتصدرون</button>
       <button data-view="how" class="nav__link">كيفية اللعب</button>
     </nav>
-    <button class="btn btn--ghost login-btn" id="authTrigger" data-modal="login"><span class="icon">♙</span><span id="authTriggerText">تسجيل الدخول</span></button>
+    <div class="account-area"><button class="btn btn--ghost login-btn" id="authTrigger" data-modal="login" aria-expanded="false"><span class="icon">♙</span><span id="authTriggerText">تسجيل الدخول</span><span class="account-arrow">⌄</span></button><div class="account-menu" id="accountMenu"><div class="account-menu__user"><span id="menuAvatar">?</span><div><strong id="menuName">اللاعب</strong><small id="menuEmail"></small></div></div><button id="openProfile" type="button"><span>♙</span><div><strong>الملف التعريفي</strong><small>تغيير الاسم ومعلومات الحساب</small></div></button><button id="openSettings" type="button"><span>⚙</span><div><strong>الإعدادات</strong><small>الصوت وتفضيلات اللعبة</small></div></button><button class="logout-item" id="logoutButton" type="button"><span>↪</span><div><strong>تسجيل الخروج</strong><small>الخروج من حسابك الحالي</small></div></button></div></div>
     <button class="menu-btn" id="menuBtn" aria-label="فتح القائمة" aria-expanded="false">☰</button>
   </header>
 
@@ -139,6 +139,9 @@
       <div class="rules panel"><h3>قواعد الساحة</h3><div><p><span>✓</span> يرى الفريقان نفس السؤال في اللحظة نفسها.</p><p><span>✓</span> لا يمكن تغيير الإجابة بعد اختيارها.</p><p><span>✓</span> تحتسب السرعة والدقة في مجموع النقاط.</p><p><span>✓</span> الفريق صاحب أعلى مجموع يفوز بالمواجهة.</p></div></div>
     </section>
   </main>
+
+  <!-- الملف التعريفي والإعدادات -->
+  <div class="modal" id="profileModal" role="dialog" aria-modal="true" aria-labelledby="profileTitle"><div class="modal__card panel profile-card"><button class="modal__close" id="closeProfile" aria-label="إغلاق">×</button><div class="profile-head"><div class="profile-avatar" id="profileAvatar">?</div><div><span>حساب BattleQuiz</span><h2 id="profileTitle">الملف التعريفي</h2></div></div><form id="profileForm"><label class="field"><span>اسم اللاعب</span><div class="input-wrap"><span>♙</span><input id="profileName" required maxlength="18" placeholder="اسمك داخل اللعبة"></div></label><label class="field"><span>البريد الإلكتروني</span><div class="input-wrap readonly"><span>✉</span><input id="profileEmail" type="email" readonly></div></label><div class="settings-box"><div><strong>مؤثرات اللعبة الصوتية</strong><small>تشغيل أصوات الإجابات والمؤقت</small></div><label class="switch"><input id="soundSetting" type="checkbox" checked><span></span></label></div><button class="btn btn--primary full" type="submit">حفظ التغييرات</button></form></div></div>
 
   <!-- نافذة تسجيل الدخول -->
   <div class="modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
